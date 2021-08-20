@@ -1,0 +1,65 @@
+<html>
+	<script>
+		async function getMessages() {
+			fetch( 'https://30cimh8tdk.execute-api.us-east-1.amazonaws.com/monitor/readings',  {
+				method: 'GET'
+			  })
+			.then(response => response.json())
+			.then((response) => {
+                console.log(response.body);
+                response.body.forEach(element => {
+                    document.getElementById("soil").innerHTML += "<p>"+element.soilmoisture+"</p>"; // Adds each message to div
+                    document.getElementById("wind").innerHTML += "<p>"+element.windspeed+"</p>";
+                    document.getElementById("temp").innerHTML += "<p>"+element.temperature+"</p>";
+                });
+			});
+        }
+		async function submitMessage() {
+            var soilmoisture = document.getElementById("soilmoisture").value;
+            var windspeed = document.getElementById("windspeed").value;
+            var temperature = document.getElementById("temperature").value
+			fetch( 'https://30cimh8tdk.execute-api.us-east-1.amazonaws.com/monitor/readings',  {
+                method: 'POST',
+                body: JSON.stringify({
+                    "soilmoisture": soilmoisture,
+                    "windspeed": windspeed,
+                    "temperature": temperature,
+                })
+			})
+			.then(response => response.json())
+			.then((response) => {
+				console.log(response);
+                document.getElementById("soil").innerHTML += "<p>"+soilmoisture+"</p>"; // Add new message to message list
+                document.getElementById("wind").innerHTML += "<p>"+windspeed+"</p>";
+                document.getElementById("temp").innerHTML += "<p>"+temperature+"</p>";
+			});
+		}
+        getMessages(); // Calls get message on load
+    </script>   
+    <head>  
+        <title>Test Form</title>
+    </head>
+    <h1><center>MONITORING DATA</h1>
+    <body style="background-color:powderblue;">
+        <form onsubmit="submitMessage();return false;">
+             <center>
+            <label for="temperature">temperature:</label><br>
+            <input type="text" id="temperature" temperature="temperature" value=""/><br>
+            <label for="soilmoisture">soil moisture:</label><br>
+            <input type="text" id="soilmoisture" soilmoisture="soilmoisture" value=""/><br>
+            <label for="windspeed">wind speed:</label><br>
+            <input type="text" id="windspeed" name="windspeed" value=""/><br>
+            <input type="submit" value="Submit">
+</center>
+      </form> 
+      <strong>soil moisture readings from DynamoDB</strong>
+      <div id="soil">
+      </div>
+      <strong>wind speed readings from DynamoDB</strong>
+      <div id="wind">
+      </div>
+      <strong>Temperature readings from DynamoDB</strong>
+      <div id="temp">
+      </div>
+	</body>
+</html>
